@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Card from '../Card';
+import CardWrapper from './CardWrapper';
 
 interface HandProps {
     cardList: Array<{
@@ -15,7 +16,8 @@ interface HandProps {
     }>;
 }
 
-function Hand({ cardList }: HandProps) {
+
+import { useState } from 'react';
 
 const HandContainer = styled.div`
   display: flex;
@@ -23,48 +25,29 @@ const HandContainer = styled.div`
   gap: 12px;
 `;
 
-const getAngleByIndexAndSize = ({ index, length }: { index: number, length: number }) => {
-    const center = (length - 1) / 2;
-    const offset = index - center;
-    const maxRotation = Math.min(45, length * 2);
-    const rotation = (offset / center) * (maxRotation / 2);
-    return rotation * 1.5;
-}
 
-const CardWrapper = styled.div<{index: number, length: number}>`
-  transform: rotate(${({ index, length }) => getAngleByIndexAndSize({ index, length })}deg);
-  padding-top: ${({ index, length }) => {
-    const center = (length - 1) / 2;
-    const offset = index - center;
-    const maxPadding = Math.min(60, length * 3);
-    return (Math.abs(offset) * (maxPadding / center)) * 2;
-  }}px;
-  margin-left: ${({ index, length }) => {
-    if (index === 0) return 0;
-    const overlapAmount = Math.min(80, length * 8);
-    return `-${overlapAmount * 2}px`;
-  }};
-  z-index: ${({ index, length }) => (index - length) * -1};
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: rotate(0deg) scale(1.2) translateY(-20px);
-    z-index: 1000;
-    margin-left: ${({ index }) => index === 0 ? '40px' : '40px'};
-    margin-right: 40px;
-  }
-`;
+function Hand({ cardList }: HandProps) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   return (
     <HandContainer>
       {cardList.map((card, index) => (
-        <CardWrapper key={index} index={index} length={cardList.length}>
-          <Card {...card} />
+        <CardWrapper
+          key={index}
+          index={index}
+          length={cardList.length}
+          selected={selectedIndex === index}
+          isAnyCardSelected={selectedIndex !== null}
+          onClick={() => setSelectedIndex(index)}
+        >
+          <Card
+            {...card}
+            selected={selectedIndex === index}
+          />
         </CardWrapper>
       ))}
     </HandContainer>
-  )
+  );
 }
 
 export default Hand;

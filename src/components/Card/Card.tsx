@@ -13,28 +13,38 @@ interface CardProps {
     description?: string;
     imageUrl?: string;
     rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+    selected: boolean;
 }
 
+const rarityColors = {
+    common: '#ccccccc9',
+    rare: '#dfce34ff',
+    epic: '#a855f7',
+    legendary: '#ff2119ff',
+};
 
 const rarityStyles = {
     common: css`
-        border: 2px solid #ccccccc9;
+        border: 2px solid ${rarityColors.common};
     `,
     rare: css`
-        border: 2px solid #dfce34ff;
+        border: 2px solid ${rarityColors.rare};
     `,
     epic: css`
-        border: 2px solid #a855f7;
+        border: 2px solid ${rarityColors.epic};
     `,
     legendary: css`
-        border: 2px solid #ff2119ff;
+        border: 2px solid ${rarityColors.legendary};
     `,
 };
 
-const CardContainer = styled.div<{rarity: CardProps['rarity']}>`
+const CardContainer = styled.div<{rarity: CardProps['rarity'], selected: boolean}>`
     background-image: url(https://media.istockphoto.com/id/182154211/photo/old-paper-textere.jpg?s=612x612&w=0&k=20&c=u674siwSw4ff0Wdqs8Z3RehcXJLnx-40mZ21z19ra78=);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    box-shadow: ${({ selected, rarity }) =>
+        selected
+        ? `0 8px 48px ${rarityColors[rarity || 'common']}`
+        : '0 2px 8px rgba(0,0,0,0.12)'};
     width: 260px;
     overflow: hidden;
     ${(props) => props.rarity && rarityStyles[props.rarity]}
@@ -55,10 +65,11 @@ const Card: React.FC<CardProps> = ({
     effects,
     description,
     imageUrl,
-    rarity = 'common'
+    rarity = 'common',
+    selected,
 }) => {
     return (
-        <CardContainer rarity={rarity}>
+        <CardContainer rarity={rarity} selected={selected}>
             <CardHeader name={name} cost={cost} />
             {imageUrl && (
                 <CardImage>
